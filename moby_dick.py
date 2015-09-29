@@ -10,9 +10,15 @@ import sys
 LEXICON_FILE = 'lexicons/lexicons_esso.csv'
 TEXT_FILE = 'texts/moby_dick.txt'
 DATA_FILE = 'data/moby_dick_esso.csv'
-CHAPTER_FILE = 'data/moby_dick_chapters.json'
+REFERENCE_FILE = 'data/moby_dick_reference.json'
+
+emotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust']
+sentiments = ['positive', 'negative']
+orientations = ['active', 'passive']
+subjectivities = ['weak', 'strong']
 
 vocabulary = []
+words = [v['word'] for v in vocabulary]
 
 # Read vocabulary
 with open(LEXICON_FILE, 'rb') as f:
@@ -37,16 +43,36 @@ current_sentence = -1
 def addData(word):
     global data
     global vocabulary
+    global words
     global current_chapter
     global current_paragraph
     global current_sentence
+    global emotions
+    global sentiments
+    global orientations
+    global subjectivities
 
     emotion = -1
     sentiment = -1
     subjectivity = -1
     orientation = -1
 
-    if len(word) > 5:
+    match = -1
+    for i,w in enumerate(words):
+        if w==word:
+            match = i
+            break
+
+    if match >= 0:
+        entry = vocabulary[match]
+        if entry['emotion']:
+            emotion = emotions.index(entry['emotion'])
+        if entry['sentiment']:
+            sentiment = sentiments.index(entry['sentiment'])
+        if entry['subjectivity']:
+            subjectivity = subjectivities.index(entry['subjectivity'])
+        if entry['orientation']:
+            orientation = orientations.index(entry['orientation'])
         data.append([emotion, sentiment, subjectivity, orientation, current_chapter, current_paragraph, current_sentence])
 
 
@@ -97,9 +123,16 @@ with open(TEXT_FILE, 'rb') as f:
                         addData(word)
 
 # Output chapters as json
-with open(CHAPTER_FILE, 'w') as outfile:
-    json.dump(chapters, outfile)
-    print('Successfully wrote '+str(len(chapters))+' chapters to file: '+CHAPTER_FILE)
+with open(REFERENCE_FILE, 'w') as outfile:
+    ref_data = {
+        'chapters': chapters,
+        'emotions': emotions,
+        'sentiments': sentiments,
+        'orientations': orientations,
+        'subjectivities': subjectivities
+    }
+    json.dump(ref_data, outfile)
+    print('Successfully wrote '+str(len(chapters))+' chapters to file: '+REFERENCE_FILE)
 
 # Output data as csv
 with open(DATA_FILE, 'wb') as f:
