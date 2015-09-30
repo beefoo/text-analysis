@@ -57,28 +57,28 @@ These lexicons were parsed and compiled using the script [compile_lexicons.py](c
    [
     {
       "chapter": 0,
-      "emotion": {
-        "anger": 0.500,
-        "fear": 0.250,
+      "emotion": [
+        0.500, // anger
+        0.250, // fear
         ...
-      },
-      "subjectivity": {
-        "weak": 0.600,
-        "strong": 0.150
-      },
-      "sentiment": {
-        "positive": 0.750,
-        "negative": 0.050
-      },
-      "orientation": {
-        "active": 0.850,
-        "passive": 0.450
-      },
-      "color": {
-        "white": 0.950,
-        "black": 0.001,
+      ],
+      "subjectivity": [
+        0.600, // weak
+        0.150 // strong
+      ],
+      "sentiment": [
+        0.750, // positive
+        0.050 // negative
+      ],
+      "orientation": [
+        0.850, // active
+        0.450 // passive
+      ],
+      "color": [
+        0.950, // white
+        0.001, // black
         ...
-      }
+      ]
     },
     ...
    ]

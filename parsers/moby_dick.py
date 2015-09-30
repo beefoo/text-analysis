@@ -9,6 +9,7 @@ import sys
 # Files
 TEXT_FILE = '../texts/moby_dick.txt'
 OUTPUT_FILE = '../output/moby_dick_normal.json'
+CHAPTERS_FILE = '../output/moby_dick_chapters.json'
 
 # Text patterns
 punctuation_pattern = '[^a-z\- ]|\-\-'
@@ -58,6 +59,12 @@ with open(TEXT_FILE, 'rb') as f:
                     chapters[-1]['text'] += " " + words
 
 # Output chapters as json
+with open(CHAPTERS_FILE, 'w') as f:
+    chapter_titles = [c['title'] for c in chapters]
+    json.dump(chapter_titles, f)
+    print('Successfully wrote '+str(len(chapters))+' chapters to file: '+CHAPTERS_FILE)
+
+# Output data as json
 with open(OUTPUT_FILE, 'w') as f:
     data['chapters'] = chapters
     json.dump(data, f)
