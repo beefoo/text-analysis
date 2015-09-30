@@ -1,0 +1,7 @@
+{
+  "emotion": ["anger", "fear", "anticipation", "trust", "surprise", "sadness", "joy", "disgust"],
+  "subjectivity": ["weak", "strong"],
+  "sentiment": ["positive", "negative"],
+  "orientation": ["active", "passive"],
+  "color": ["white", "black", "red", "green", "yellow", "blue", "brown", "pink", "purple", "orange", "grey"]
+}

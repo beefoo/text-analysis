@@ -3,20 +3,28 @@
 # This script compiles and normalizes a number of emotion-sentiment-subjectivity-orientation lexicons from different sources
 
 import csv
+import json
 import sys
 
-# Config
-output_file = "lexicons/lexicons_esso.csv"
-emotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust']
-sentiments = ['positive', 'negative']
-orientations = ['active', 'passive']
-subjectivities = ['weak', 'strong']
-headers = ['word', 'emotion', 'sentiment', 'subjectivity', 'orientation', 'source']
+# Files
+OUTPUT_FILE = "lexicons/lexicons_compiled.csv"
+CATEGORIES_FILE = "data/categories.json"
 
 # Init
 words = []
 match_count = 0
 add_count = 0
+categories = {}
+
+# Read categories
+with open(CATEGORIES_FILE) as f:
+    categories = json.load(f)
+
+# Init headers
+category_headers = categories.keys()
+headers = ['word']
+headers.extend(category_headers)
+headers.append('source')
 
 # Adds new word or extends exisiting word
 def add_word(_w):
@@ -54,9 +62,9 @@ with open(EMOLEX_FILE, 'rb') as f:
         word = {}
         word['word'] = _word.decode('utf-8').lower()
         word['source'] = 'emolex'
-        if _category in emotions:
+        if _category in categories['emotion']:
             word['emotion'] = _category
-        elif _category in sentiments:
+        elif _category in categories['sentiment']:
             word['sentiment'] = _category
         if int(_association) > 0:
             add_word(word)
@@ -109,10 +117,12 @@ with open(MPQA_FILE) as f:
             p = pair.split("=")
             key = p[0]
             if key=="type":
-                word['subjectivity'] = p[1].replace('subj','')
+                subjectivity = p[1].replace('subj','')
+                if subjectivity in categories['subjectivity']:
+                    word['subjectivity'] = subjectivity
             elif key=="word1":
                 word['word'] = p[1].decode('utf-8').lower()
-            elif key=="priorpolarity" and p[1] in sentiments:
+            elif key=="priorpolarity" and p[1] in categories['sentiment']:
                 word['sentiment'] = p[1]
         if word['word'] and ('subjectivity' in word or 'sentiment' in word):
             add_word(word)
@@ -152,33 +162,50 @@ with open(INQUIRER_FILE, 'rb') as f:
 
 print "Inquirer matches: " + str(match_count) + ", added: " + str(add_count)
 
+# NRC Word-Colour Association Lexicon: http://www.saifmohammad.com/WebPages/lexicons.html
+#   Format: motive--motion \t Colour=black \t VotesForThisColour=2 \t TotalVotesCast=4
+COLOR_FILE = "lexicons_external/NRC-Colour-Lexicon-v0.92/NRC-color-lexicon-senselevel-v0.92.txt"
+match_count = 0
+add_count = 0
+
+with open(COLOR_FILE, 'rb') as f:
+    rows = csv.reader(f, delimiter='\t')
+    for _word_sense, _color, _votes, _votes_total in rows:
+        word = {}
+        word['word'] = _word_sense.split("--")[0].decode('utf-8').lower()
+        word['color'] = _color.split("=")[1]
+        word['source'] = 'colour'
+        votes = _votes.split("=")[1]
+        votes_total = _votes_total.split("=")[1]
+        if votes.isdigit() and votes_total.isdigit() and word['color'] in categories['color'] and float(votes_total) and float(votes) / float(votes_total) > 0.5:
+            add_word(word)
+
+print "Colour matches: " + str(match_count) + ", added: " + str(add_count)
+
 # Sort and report
 words = sorted(words, key=lambda k: k['word'])
 word_count = len(words)
-words_with_emotion = len([w for w in words if w['emotion']])
-words_with_sentiment = len([w for w in words if w['sentiment']])
-words_with_subjectivity = len([w for w in words if w['subjectivity']])
-words_with_orientation = len([w for w in words if w['orientation']])
 print "Total word count: " + str(word_count)
-print "Words with emotion: " + str(words_with_emotion) + " (" + str(round(1.0*words_with_emotion/word_count*100, 1)) + "%)"
-print "Words with sentiment: " + str(words_with_sentiment) + " (" + str(round(1.0*words_with_sentiment/word_count*100, 1)) + "%)"
-print "Words with subjectivity: " + str(words_with_subjectivity) + " (" + str(round(1.0*words_with_subjectivity/word_count*100, 1)) + "%)"
-print "Words with orientation: " + str(words_with_orientation) + " (" + str(round(1.0*words_with_orientation/word_count*100, 1)) + "%)"
+for ch in category_headers:
+    words_with_category = len([w for w in words if w[ch]])
+    print "Words with "+ch+": " + str(words_with_category) + " (" + str(round(1.0*words_with_category/word_count*100, 1)) + "%)"
 
-# Output snapshot 2015-09-27
+# Output snapshot 2015-09-30
 #
 # Emolex matches: 7433, added: 6468
-# Opinion Lexicon matches: 2486, added: 4303
-# MPQA matches: 7221, added: 1001
+# Opinion Lexicon matches: 2490, added: 4298
+# MPQA matches: 7225, added: 997
 # Inquirer matches: 3529, added: 853
-# Total word count: 12625
-# Words with emotion: 4463 (35.4%)
-# Words with sentiment: 10925 (86.5%)
-# Words with subjectivity: 6886 (54.5%)
-# Words with orientation: 2192 (17.4%)
+# Colour matches: 4385, added: 2236
+# Total word count: 14852
+# Words with emotion: 4463 (30.0%)
+# Words with sentiment: 10916 (73.5%)
+# Words with subjectivity: 6886 (46.4%)
+# Words with orientation: 2192 (14.8%)
+# Words with color: 5404 (36.4%)
 
 # Output as csv
-with open(output_file, 'wb') as f:
+with open(OUTPUT_FILE, 'wb') as f:
     cw = csv.writer(f)
     cw.writerow(headers)
     for w in words:
@@ -188,4 +215,4 @@ with open(output_file, 'wb') as f:
                 w[h] = w[h].encode('utf-8')
             row.append(w[h])
         cw.writerow(row)
-    print('Successfully wrote words to file: '+output_file)
+    print('Successfully wrote words to file: '+OUTPUT_FILE)
