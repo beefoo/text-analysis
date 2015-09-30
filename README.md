@@ -85,3 +85,5 @@ These lexicons were parsed and compiled using the script [compile_lexicons.py](c
    ```
 
    Where each item represents a group of words (with a size of `word buffer` as configured in the previous step). The numbers are percentages between 0 and 1 that represents the relative weight of that particular category value.
+
+5. Optionally, run `python report_data.py <analysis json file> <output dir>` to write individual .csv files for each category, e.g. `python report_data.py output/moby_dick_analysis.json output/moby_dick/`

@@ -12,7 +12,7 @@ CATEGORIES_FILE = 'data/categories.json'
 
 # Input
 if len(sys.argv) < 4:
-    print "Usage: %s <data csv file> <a path to output json file> <word buffer> <word offset>`" % sys.argv[0]
+    print "Usage: %s <data csv file> <a path to output json file> <word buffer> <word offset>" % sys.argv[0]
     sys.exit(1)
 
 DATA_FILE = sys.argv[1]
