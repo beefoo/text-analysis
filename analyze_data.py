@@ -32,9 +32,7 @@ with open(CATEGORIES_FILE) as f:
 
 # Init max
 for c in categories:
-    max_values[c] = []
-    for cc in categories[c]:
-        max_values[c].append(0)
+    max_values[c] = 0
 
 # Read data file
 with open(DATA_FILE, 'rb') as f:
@@ -68,8 +66,8 @@ def do_analysis(word_list, chapter):
             if w[c] >= 0:
                 entry[c][w[c]] += 1
                 # Track max values
-                if entry[c][w[c]] > max_values[c][w[c]]:
-                    max_values[c][w[c]] = entry[c][w[c]]
+                if entry[c][w[c]] > max_values[c]:
+                    max_values[c] = entry[c][w[c]]
 
     # Add data
     data.append(entry)
@@ -103,7 +101,7 @@ print 'Finished Chapter ' + str(current_chapter+1)
 for i, entry in enumerate(data):
     for c in categories:
         for j,v in enumerate(entry[c]):
-            data[i][c][j] = round(1.0 * v / max_values[c][j], 3)
+            data[i][c][j] = round(1.0 * v / max_values[c], 3)
 
 # Output analysis as json
 with open(ANALYSIS_FILE, 'w') as f:
