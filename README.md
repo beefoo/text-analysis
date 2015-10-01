@@ -41,7 +41,7 @@ These lexicons were parsed and compiled using the script [compile_lexicons.py](c
    }
    ```
 
-3. Run `get_data.py <json file from previous step> <a path to output csv file>`, e.g. `get_data.py data/moby_dick_normal.json output/moby_dick_data.csv`. This outputs a .csv file in the format:
+3. Run `get_data.py <json file from previous step> <a path to output csv file>`, e.g. `get_data.py output/moby_dick_normal.json output/moby_dick_data.csv`. This outputs a .csv file in the format:
 
    ```
    emotion,color,orientation,sentiment,subjectivity,chapter
@@ -51,7 +51,7 @@ These lexicons were parsed and compiled using the script [compile_lexicons.py](c
 
    Where each row represents a word, and each column represent the index of each category listed in [data/categories.json](data/categories.json)
 
-4. Run `analyze_data.py <csv file from previous step> <a path to output csv file> <word buffer> <word offset>`, e.g. `python analyze_data.py output/moby_dick_data.csv output/moby_dick_analysis.json 200 100`. This outputs a .json file in the format:
+4. Run `analyze_data.py <csv file from previous step> <a path to output csv file> <word buffer> <word offset>`, e.g. `python analyze_data.py output/moby_dick_data.csv output/moby_dick_analysis.json 400 200`. This outputs a .json file in the format:
 
    ```javascript
    [

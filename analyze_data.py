@@ -87,7 +87,8 @@ for entry in input_data:
     # Buffer size reached, do analysis
     elif len(word_buffer) >= WORD_BUFFER_SIZE:
         do_analysis(word_buffer, current_chapter)
-        word_buffer = word_buffer[WORD_OFFSET:] # first <WORD_OFFSET> from buffer
+        splice_start = WORD_BUFFER_SIZE-WORD_OFFSET
+        word_buffer = word_buffer[splice_start:] # first <WORD_OFFSET> from buffer
 
     # Buffer not large enough, add entry
     else:

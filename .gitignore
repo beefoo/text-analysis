@@ -1,5 +1,5 @@
 .DS_Store
 _dev/
 
-output/*.csv
-output/*.json
+output/*
+!output/.keep
