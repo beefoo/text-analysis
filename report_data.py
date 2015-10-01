@@ -35,7 +35,11 @@ for c in categories:
     # Output category as csv
     with open(OUTPUT_DIR + c + '.csv', 'wb') as f:
         cw = csv.writer(f)
-        cw.writerow(categories[c])
-        for row in data:
-            cw.writerow(row[c])
+        headers = categories[c]
+        headers.append('chapter')
+        cw.writerow(headers)
+        for entry in data:
+            row = entry[c]
+            row.append(entry['chapter'])
+            cw.writerow(row)
         print('Successfully wrote to file: '+OUTPUT_DIR + c + '.csv')

@@ -3,3 +3,6 @@ _dev/
 
 output/*
 !output/.keep
+
+visualization/output/
+visualization/build/
