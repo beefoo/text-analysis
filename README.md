@@ -22,11 +22,12 @@ These lexicons were parsed and compiled using the script [compile_lexicons.py](c
 ## How to analyze text
 
 1. Download text, e.g. [texts/moby_dick.txt](texts/moby_dick.txt)
-2. Write a parser for text, e.g. [parsers/moby_dick.py](parsers/moby_dick.py) which outputs JSON file in format:
+2. Parse text using `gutenberg_text.py <text file> <output text json file> <output chapter json file>`, e.g. `gutenberg_text.py ../texts/moby_dick.txt ../output/moby_dick_normal.json ../output/moby_dick_chapters.json`. This generates an output that looks like this:
 
    ```javascript
    {
      "title": "Moby-Dick; or, The Whale'",
+     "author": "Herman Melville",
      "chapters": [
        {
          "title": "Loomings",

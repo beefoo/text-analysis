@@ -34,10 +34,10 @@ color textC = #f4f3ef;
 
 // time
 float startMs = 0;
-float stopMs = 0;
+float stopMs = 120000;
 float elapsedMs = startMs;
 float frameMs = (1.0/fps) * 1000;
-float chapterMs = 1000;
+float msPerRow = 0;
 
 void setup() {
   // set the stage
@@ -65,18 +65,29 @@ void setup() {
   }
 
   // calculation
-  stopMs = chapterMs * chapters.size();
+  msPerRow = stopMs / data.size();
   columnWidth = 1.0 * (canvasW-padding*columnCount-padding) / columnCount;
 
-  noLoop();
+  // noLoop();
 }
 
 void draw() {
   background(bgColor);
   textFont(font);
-  textAlign(CENTER, BOTTOM);
 
-  DataRow row = data.get(0);
+  DataRow row = data.get(data.size()-1);
+  float ms = 0;
+  for (DataRow r : data) {
+    if (ms >= elapsedMs) {
+      row = r;
+      break; 
+    }
+    ms += msPerRow;
+  }
+  
+  // chapter
+  textAlign(CENTER, TOP);
+  text("Chapter " + (row.getChapter()+1) + ": " + chapters.get(row.getChapter()), padding, padding, canvasW-padding*2, padding);
 
   float x = padding;
   int text_y1 = canvasH-padding-labelHeight;
@@ -90,10 +101,14 @@ void draw() {
 
     // draw text
     fill(textC);
+    textAlign(CENTER, BOTTOM);
     text(dataHeaders[i], x-padding, text_y1, columnWidth+padding*2, labelHeight);
 
     x = x + columnWidth + padding;
   }
+  
+  // increment time
+  elapsedMs += frameMs;
 }
 
 void mousePressed() {
@@ -114,6 +129,10 @@ class DataRow
     }
 
     chapter = _row.getInt("chapter");
+  }
+  
+  int getChapter() {
+    return chapter; 
   }
 
   float getValue(int column) {

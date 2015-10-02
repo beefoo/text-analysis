@@ -1,24 +1,33 @@
 # -*- coding: utf-8 -*-
 
-# This script normalizes Moby Dick text
+# This script normalizes Gutenberg text
+#   Usage: gutenberg_text.py ../texts/moby_dick.txt ../output/moby_dick_normal.json ../output/moby_dick_chapters.json
 
 import json
 import re
 import sys
 
+# Input
+if len(sys.argv) < 3:
+    print "Usage: %s <text file> <output text json file> <output chapter json file>" % sys.argv[0]
+    sys.exit(1)
+
 # Files
-TEXT_FILE = '../texts/moby_dick.txt'
-OUTPUT_FILE = '../output/moby_dick_normal.json'
-CHAPTERS_FILE = '../output/moby_dick_chapters.json'
+TEXT_FILE = sys.argv[1]
+OUTPUT_FILE = sys.argv[2]
+CHAPTERS_FILE = sys.argv[3]
 
 # Text patterns
 punctuation_pattern = '[^a-z\- ]|\-\-'
-chapter_pattern = 'CHAPTER [1-9][0-9]*\. ([^\.]+)\.|(Epilogue)'
+title_pattern = '^Title: (.+)'
+author_pattern = '^Author: (.+)'
+chapter_pattern = '^CHAPTER [1-9IVX][0-9IVX]*\.? ([^.]+)\.?$|^(Epilogue)$'
 end_pattern = 'End of Project Gutenberg.*'
 
 # Init data
 data = {
-    'title': 'Moby-Dick; or, The Whale'
+    'title': '',
+    'author': ''
 }
 chapters = []
 
@@ -38,8 +47,18 @@ with open(TEXT_FILE, 'rb') as f:
             })
             print "Chapter " + str(len(chapters)) + ": " + chapter_name
 
-        # Didn't reach the first chapter yet, just continue
+        # Didn't reach the first chapter yet, check for title and author, and continue
         elif not len(chapters):
+            # Check for title
+            if not data['title']:
+                title_match = re.search(title_pattern, line)
+                if title_match:
+                    data['title'] = title_match.group(1)
+            # Check for author
+            if not data['author']:
+                author_match = re.search(author_pattern, line)
+                if author_match:
+                    data['author'] = author_match.group(1)
             continue
 
         else:
