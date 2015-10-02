@@ -4,11 +4,18 @@ int fps = 30;
 String outputFrameFile = "output/frames/frames-#####.png";
 boolean captureFrames = false;
 
+// config
+String category = "color";
+String text_key = "moby_dick";
+
 // data
-String dataFile = "../output/moby_dick/emotion.csv";
-String chaptersFile = "../output/moby_dick_chapters.json";
+String dataFile = "../output/"+text_key+"/"+category+".csv";
+String chaptersFile = "../output/"+text_key+"_chapters.json";
+String colorsFile = "../data/colors.json";
 JSONArray chaptersJSON;
+JSONObject colorsJSON;
 String[] dataHeaders;
+String[] colors;
 Table dataTable;
 StringList chapters;
 ArrayList<DataRow> data;
@@ -64,6 +71,16 @@ void setup() {
     chapters.append(chaptersJSON.getString(i));
   }
 
+  // read color data
+  colorsJSON = loadJSONObject(colorsFile);
+  colors = new String[columnCount];
+  JSONObject colorJSON = colorsJSON.getJSONObject(category);
+  for(int i=0; i<columnCount; i++) {
+    String h = dataHeaders[i];
+    String c = colorJSON.getString(h);
+    colors[i] = "FF" + c.substring(1);
+  }
+
   // calculation
   msPerRow = stopMs / data.size();
   columnWidth = 1.0 * (canvasW-padding*columnCount-padding) / columnCount;
@@ -80,11 +97,11 @@ void draw() {
   for (DataRow r : data) {
     if (ms >= elapsedMs) {
       row = r;
-      break; 
+      break;
     }
     ms += msPerRow;
   }
-  
+
   // chapter
   textAlign(CENTER, TOP);
   text("Chapter " + (row.getChapter()+1) + ": " + chapters.get(row.getChapter()), padding, padding, canvasW-padding*2, padding);
@@ -94,7 +111,7 @@ void draw() {
   for(int i=0; i<columnCount; i++) {
 
     // draw rect
-    fill(#666666);
+    fill(unhex(colors[i]));
     float h = row.getValue(i) * columnHeight;
     float y = padding + (columnHeight-h);
     rect(x, y, columnWidth, h);
@@ -106,7 +123,7 @@ void draw() {
 
     x = x + columnWidth + padding;
   }
-  
+
   // increment time
   elapsedMs += frameMs;
 }
@@ -130,9 +147,9 @@ class DataRow
 
     chapter = _row.getInt("chapter");
   }
-  
+
   int getChapter() {
-    return chapter; 
+    return chapter;
   }
 
   float getValue(int column) {

@@ -1,0 +1,37 @@
+{
+  "emotion": {
+    "anger": "#D40000",
+    "fear": "#A725DB",
+    "anticipation": "#FF7D00",
+    "trust": "#00B400",
+    "surprise": "#0089E0",
+    "sadness": "#0000C8",
+    "joy": "#FFE854",
+    "disgust": "#DE00DE"
+  },
+  "subjectivity": {
+    "weak": "#C1C1C1",
+    "strong": "#D40000"
+  },
+  "sentiment": {
+    "positive": "#00B400",
+    "negative": "#D40000"
+  },
+  "orientation": {
+    "active": "#D40000",
+    "passive": "#C1C1C1"
+  },
+  "color": {
+    "white": "#FFFFFF",
+    "black": "#000000",
+    "red": "#D40000",
+    "green": "#00B400",
+    "yellow": "#FFE854",
+    "blue": "#0089E0",
+    "brown": "#967034",
+    "pink": "#DE00DE",
+    "purple": "#A725DB",
+    "orange": "#FF7D00",
+    "grey": "#7C7C7C"
+  }
+}
